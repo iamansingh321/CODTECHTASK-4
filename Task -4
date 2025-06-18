@@ -1,0 +1,78 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+// Function to write tokens to a file
+void writeTokensToFile(const vector<string>& tokens, const string& filename) {
+    ofstream file(filename);
+    if (file.is_open()) {
+        for (const string& token : tokens) {
+            file << token << endl;
+        }
+        file.close();
+        cout << "Tokens written to file successfully." << endl;
+    } else {
+        cout << "Unable to open file for writing." << endl;
+    }
+}
+
+// Function to read tokens from a file
+vector<string> readTokensFromFile(const string& filename) {
+    vector<string> tokens;
+    ifstream file(filename);
+    if (file.is_open()) {
+        string token;
+        while (file >> token) {
+            tokens.push_back(token);
+        }
+        file.close();
+    } else {
+        cout << "Unable to open file for reading." << endl;
+    }
+    return tokens;
+}
+
+// Function to perform lexical analysis
+vector<string> lexicalAnalysis(const string& code) {
+    vector<string> tokens;
+    string token;
+    for (char c : code) {
+        if (isalnum(c)) {
+            token += c;
+        } else if (c == '+' || c == '-' || c == '*' || c == '/') {
+            if (!token.empty()) {
+                tokens.push_back(token);
+                token.clear();
+            }
+            tokens.push_back(string(1, c));
+        }
+    }
+    if (!token.empty()) {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+int main() {
+    string code = "x = 5 + 3 * 2";
+    vector<string> tokens = lexicalAnalysis(code);
+
+    cout << "Tokens:" << endl;
+    for (const string& token : tokens) {
+        cout << token << endl;
+    }
+
+    string filename = "tokens.txt";
+    writeTokensToFile(tokens, filename);
+
+    vector<string> readTokens = readTokensFromFile(filename);
+    cout << "Tokens read from file:" << endl;
+    for (const string& token : readTokens) {
+        cout << token << endl;
+    }
+
+    return 0;
+}
